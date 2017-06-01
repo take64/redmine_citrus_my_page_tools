@@ -1,0 +1,90 @@
+<%
+  # calendar
+  calendars = []
+  for add_day in [-7, 0, 7] do
+    calendar = Redmine::Helpers::Calendar.new(User.current.today+add_day, current_language, :week)
+    calendar.events = calendar_items(calendar.startdt, calendar.enddt)
+    calendars << calendar
+  end
+  # time_entry
+  first_day = calendars[0].startdt
+  time_entries = TimeEntry.where("#{TimeEntry.table_name}.user_id = ? AND #{TimeEntry.table_name}.spent_on BETWEEN ? AND ?", User.current.id, first_day, User.current.today).
+    joins(:activity, :project).
+    references(:issue => [:tracker, :status]).
+    includes(:issue => [:tracker, :status]).
+    order("#{TimeEntry.table_name}.spent_on DESC, #{Project.table_name}.name ASC, #{Tracker.table_name}.position ASC, #{Issue.table_name}.id ASC").
+    to_a.
+    group_by(&:spent_on)
+%>
+<h3>Citrus Groove Calendar</h3>
+
+<table class="cal">
+  <thead>
+      <tr>
+          <th scope="col" title="<%= l(:label_week) %>" class="week-number"></th>
+          <% 7.times do |i| %>
+            <th scope="col"><%= day_name( (calendars[0].first_wday+i)%7 ) %></th>
+          <% end %>
+      </tr>
+  </thead>
+  <tbody>
+      <% for calendar in calendars do %>
+      <tr>
+        <% day = calendar.startdt %>
+        <% while day <= calendar.enddt %>
+          <% if day.cwday == calendar.first_wday %>
+            <%= ("<td class='week-number' style='-webkit-writing-mode:vertical-rl;-ms-writing-mode:tb-rl;writing-mode:vertical-rl;' title='#{ l(:label_week) }'>#{day.strftime('%B')}</td>".html_safe) %>
+          <% end %>
+          <td class="even<%= ' today' if User.current.today == day %>">
+            <p class="day-num"><%= day.day %></p>
+            <%
+              # entry hours
+              entry_hours = 0
+              if time_entries[day]
+                for time_entry in time_entries[day] do
+                  if time_entry
+                    entry_hours = entry_hours + time_entry.hours
+                  end
+                end
+              end
+              # estimated hours
+              estimated_hours = 0
+              for issue in calendar.events_on(day) do
+                if issue.is_a? Issue
+                  if issue.estimated_hours
+                    estimated_hours = estimated_hours + (issue.estimated_hours / (issue.working_duration + 1))
+                  end
+                end
+              end
+              # events
+              events = calendar.events_on(day)
+              events.sort! do |a, b|
+                a_working_duration = (a.working_duration)
+                b_working_duration = (b.working_duration)
+                ret = (a_working_duration <=> b_working_duration) * -1
+                ret
+              end
+            %>
+            <p class="day-num">( <%= entry_hours %> / <%= estimated_hours %> h )</p>
+            <% events.each do |i| %>
+              <% if i.is_a? Issue %>
+                <div class="<%= i.css_classes %> <%= 'starting' if day == i.start_date %> <%= 'ending' if day == i.due_date %> tooltip">
+                  <%= "#{i.project} -" unless @project && @project == i.project %>
+                  <%= link_to_issue i, :truncate => 30 %>
+                  <span class="tip"><%= render_issue_tooltip i %></span>
+                </div>
+              <% else %>
+                <span class="icon icon-package">
+                  <%= "#{i.project} -" unless @project && @project == i.project %>
+                  <%= link_to_version i%>
+                </span>
+              <% end %>
+            <% end %>
+          </td>
+          <%= '</tr><tr>'.html_safe if day.cwday==calendar.last_wday and day!=calendar.enddt %>
+          <% day = day + 1 %>
+        <% end %>
+      </tr>
+      <% end %>
+  </tbody>
+</table>
