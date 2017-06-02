@@ -1,3 +1,0 @@
-= redmine_citrus_my_page_tools
-
-Description goes here
