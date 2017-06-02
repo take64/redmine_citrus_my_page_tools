@@ -23,7 +23,7 @@ I am checking the operation.
 
             git clone https://github.com/take64/redmine_citrus_my_page_tools.git redmine_citrus_my_page_tools
 
-    or
+        or
 
             git clone git@github.com:take64/redmine_citrus_my_page_tools.git redmine_citrus_my_page_tools
 
