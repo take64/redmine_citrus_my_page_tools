@@ -1,12 +1,12 @@
 # redmine_citrus_my_page_tools
 
-This plugin is 'my page' extension for Redmine.
-このプラグインはRedmineのマイページ拡張機能です。
+* This plugin is 'my page' extension for Redmine.
+* このプラグインはRedmineのマイページ拡張機能です。
 
 ## Compatibility
 
-Redmine 3.3.3
-Ruby 2.3.4
+* Redmine 3.3.3
+* Ruby 2.3.4
 
 I am checking the operation.
 以上のバージョンで動作確認を行っています。
@@ -40,15 +40,15 @@ I am checking the operation.
 * Purpose
 
     * Look for tickets registered on the same date in multiple projects.
-    (複数プロジェクトで同じ日付に登録されているチケットが無いかを探す)
+    * (複数プロジェクトで同じ日付に登録されているチケットが無いかを探す)
 
 * Contents
 
     * 3 week calendar.
-    (本日を中心とした3週間分のカレンダー)
+    * (本日を中心とした3週間分のカレンダー)
+
     * work hours and estimated hours display.
-    (予定工数と実績工数の表示)
-    *
+    * (予定工数と実績工数の表示)
 
 * Preview
 ![compact and extended view](doc/preview-2017-06-01_1.png)
