@@ -15,6 +15,67 @@
     order("#{TimeEntry.table_name}.spent_on DESC, #{Project.table_name}.name ASC, #{Tracker.table_name}.position ASC, #{Issue.table_name}.id ASC").
     to_a.
     group_by(&:spent_on)
+  # hours
+  estimated_hours = {}
+  entry_hours = {}
+  events = {}
+  week_estimated_hours = []
+  week_entry_hours = []
+  for calendar in calendars do
+    day = calendar.startdt
+    week_estimated_hour = 0
+    week_entry_hour = 0
+    while day <= calendar.enddt
+      # estimated_hours
+      for issue in calendar.events_on(day) do
+        if issue.is_a? Issue
+          if issue.estimated_hours
+            unless estimated_hours[day]
+              estimated_hours[day] = 0
+            end
+            hour = (issue.estimated_hours / (issue.working_duration + 1))
+            estimated_hours[day] = estimated_hours[day] + hour
+            week_estimated_hour = week_estimated_hour + hour
+          end
+        end
+      end
+      # entry_hours
+      if time_entries[day]
+        for time_entry in time_entries[day] do
+          if time_entry
+            unless entry_hours[day]
+              entry_hours[day] = 0
+            end
+            entry_hours[day] = entry_hours[day] + time_entry.hours
+            week_entry_hour = week_entry_hour + time_entry.hours
+          end
+        end
+      end
+      # events
+      events[day] = calendar.events_on(day)
+      events[day].sort! do |a, b|
+        a_working_duration = (a.working_duration)
+        b_working_duration = (b.working_duration)
+        ret = (a_working_duration <=> b_working_duration) * -1
+        ret
+      end
+      # add
+      day = day + 1;
+    end
+    week_estimated_hours << week_estimated_hour
+    week_entry_hours << week_entry_hour
+  end
+  # css
+  css_extends_issues = "padding:1em;"
+  css_extends_week = "-webkit-writing-mode:vertical-rl;-ms-writing-mode:tb-rl;writing-mode:vertical-rl;"
+  
+  def nvl_zero(value)
+    if value
+      value
+    else
+      0
+    end
+  end
 %>
 <h3>Citrus Groove Calendar</h3>
 
@@ -28,49 +89,23 @@
       </tr>
   </thead>
   <tbody>
-      <% for calendar in calendars do %>
+      <% #for calendar in calendars do %>
+      <% calendars.each_with_index do |calendar,index| %>
       <tr>
         <% day = calendar.startdt %>
         <% while day <= calendar.enddt %>
           <% if day.cwday == calendar.first_wday %>
-            <%= ("<td class='week-number' style='-webkit-writing-mode:vertical-rl;-ms-writing-mode:tb-rl;writing-mode:vertical-rl;' title='#{ l(:label_week) }'>#{day.strftime('%B')}</td>".html_safe) %>
+            <%= ("<td class='week-number' style='#{css_extends_week}' title='#{ l(:label_week) }'>#{day.strftime('%B')} ( #{week_entry_hours[index]} / #{week_estimated_hours[index]} h )</td>".html_safe) %>
           <% end %>
           <td class="even<%= ' today' if User.current.today == day %>">
             <p class="day-num"><%= day.day %></p>
-            <%
-              # entry hours
-              entry_hours = 0
-              if time_entries[day]
-                for time_entry in time_entries[day] do
-                  if time_entry
-                    entry_hours = entry_hours + time_entry.hours
-                  end
-                end
-              end
-              # estimated hours
-              estimated_hours = 0
-              for issue in calendar.events_on(day) do
-                if issue.is_a? Issue
-                  if issue.estimated_hours
-                    estimated_hours = estimated_hours + (issue.estimated_hours / (issue.working_duration + 1))
-                  end
-                end
-              end
-              # events
-              events = calendar.events_on(day)
-              events.sort! do |a, b|
-                a_working_duration = (a.working_duration)
-                b_working_duration = (b.working_duration)
-                ret = (a_working_duration <=> b_working_duration) * -1
-                ret
-              end
-            %>
-            <p class="day-num">( <%= entry_hours %> / <%= estimated_hours %> h )</p>
-            <% events.each do |i| %>
+            <p class="day-num">( <%= nvl_zero entry_hours[day] %> / <%= nvl_zero estimated_hours[day] %> h )</p>
+            <% events[day].each do |i| %>
               <% if i.is_a? Issue %>
-                <div class="<%= i.css_classes %> <%= 'starting' if day == i.start_date %> <%= 'ending' if day == i.due_date %> tooltip">
+                <div style="<%= css_extends_issues %>" class="<%= i.css_classes %> <%= 'starting' if day == i.start_date %> <%= 'ending' if day == i.due_date %> tooltip">
                   <%= "#{i.project} -" unless @project && @project == i.project %>
                   <%= link_to_issue i, :truncate => 30 %>
+                  ( <%= i.done_ratio %> % )
                   <span class="tip"><%= render_issue_tooltip i %></span>
                 </div>
               <% else %>
