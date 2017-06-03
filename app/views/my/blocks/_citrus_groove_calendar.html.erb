@@ -68,7 +68,7 @@
   # css
   style_extends_issues = "padding:1em;"
   style_extends_week = "-webkit-writing-mode:vertical-rl;-ms-writing-mode:tb-rl;writing-mode:vertical-rl;"
-  # css method
+  # css method ratio
   def style_ratio(issue)
     ratio = issue.done_ratio
     if ratio == 100
@@ -81,6 +81,16 @@
       "color:#666666;"
     else
       "color:#333333;"
+    end
+  end
+  # css method week
+  def style_week(day)
+    if day.wday == 0
+      "background-color:#EE9999;color:#FFFFFF;"
+    elsif day.wday == 6
+      "background-color:#9999EE;color:#FFFFFF;"
+    else
+      "background-color:#F9F9F9;"
     end
   end
   # util method
@@ -112,7 +122,7 @@
           <% if day.cwday == calendar.first_wday %>
             <%= ("<td class='week-number' style='#{style_extends_week}' title='#{ l(:label_week) }'>#{day.strftime('%B')} ( #{week_entry_hours[index]} / #{week_estimated_hours[index]} h )</td>".html_safe) %>
           <% end %>
-          <td class="even<%= ' today' if User.current.today == day %>">
+          <td class="<%= 'today' if User.current.today == day %>" style="<%= style_week day %>">
             <p class="day-num"><%= day.day %></p>
             <p class="day-num">( <%= nvl_zero entry_hours[day] %> / <%= nvl_zero estimated_hours[day] %> h )</p>
             <% events[day].each do |i| %>
