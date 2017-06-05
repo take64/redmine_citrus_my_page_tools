@@ -1,7 +1,13 @@
 <%
   # calendar
+  week_list = [0, 7]
+  if User.current.today.cwday <= 3
+    week_list.unshift(-7)
+  else
+    week_list.push(14)
+  end
   calendars = []
-  for add_day in [0, 7, 14] do
+  for add_day in week_list do
     calendar = Redmine::Helpers::Calendar.new(User.current.today+add_day, current_language, :week)
     calendar.events = calendar_items(calendar.startdt, calendar.enddt)
     calendars << calendar
