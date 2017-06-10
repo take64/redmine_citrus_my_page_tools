@@ -66,9 +66,10 @@ module GrooveCalendarHelper
         # events
         events[day] = calendar.events_on(day)
         events[day].sort! do |a, b|
-          a_working_duration = (a.working_duration)
-          b_working_duration = (b.working_duration)
-          ret = (a_working_duration <=> b_working_duration) * -1
+          ret = ((a.working_duration) <=> (b.working_duration)) * -1
+          if ret == 0
+            ret = ((a.project) <=> (b.project))
+          end
           ret
         end
         # add
