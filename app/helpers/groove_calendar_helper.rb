@@ -15,6 +15,7 @@ module GrooveCalendarHelper
     end
     calendars
   end
+
   # time entry
   def groove_time_entries(first_day)
     time_entries = TimeEntry.where("#{TimeEntry.table_name}.user_id = ? AND #{TimeEntry.table_name}.spent_on BETWEEN ? AND ?", User.current.id, first_day, User.current.today).
@@ -26,39 +27,16 @@ module GrooveCalendarHelper
       group_by(&:spent_on)
     time_entries
   end
+
   # groove hours
-  def groove_hours(calendars, time_entries)
+  def groove_hours(calendars)
     estimated_hours = {}
-    entry_hours = {}
     events = {}
     week_estimated_hours = []
-    week_entry_hours = []
     for calendar in calendars do
       day = calendar.startdt
       week_estimated_hour = 0
-      week_entry_hour = 0
       while day <= calendar.enddt
-        # estimated_hours
-        for issue in calendar.events_on(day) do
-          # filter
-          next unless issue.is_a? Issue
-          next unless issue.estimated_hours
-          # logic
-          estimated_hours[day] = nvl_zero(estimated_hours[day])
-          hour = (issue.estimated_hours / (issue.working_duration + 1))
-          estimated_hours[day] = estimated_hours[day] + hour
-          week_estimated_hour = week_estimated_hour + hour
-        end
-        # entry_hours
-        if time_entries[day]
-          for time_entry in time_entries[day] do
-            # filter
-            next unless time_entry
-            # logic
-            entry_hours[day] = nvl_zero(entry_hours[day]) + time_entry.hours
-            week_entry_hour = week_entry_hour + time_entry.hours
-          end
-        end
         # events
         events[day] = calendar.events_on(day)
         events[day].sort! do |a, b|
@@ -66,20 +44,53 @@ module GrooveCalendarHelper
           ret = ((a.project) <=> (b.project)) if ret == 0
           ret
         end
-        # add
+        # estimated_hours
+        for issue in events[day] do
+          # filter
+          next unless issue.is_a? Issue
+          next unless issue.estimated_hours
+          # logic
+          hour = (issue.estimated_hours / (issue.working_duration + 1))
+          estimated_hours[day] = nvl_zero(estimated_hours[day]) + hour
+          week_estimated_hour = week_estimated_hour + hour
+        end
         day += 1;
       end
       week_estimated_hours << week_estimated_hour
-      week_entry_hours << week_entry_hour
     end
     {
       'estimated_hours' => estimated_hours,
-      'entry_hours' => entry_hours,
       'events' => events,
       'week_estimated_hours' => week_estimated_hours,
+    }
+  end
+
+  # entry hours
+  def groove_entry_hours(calendars, time_entries)
+    entry_hours = {}
+    week_entry_hours = []
+    for calendar in calendars do
+      week_entry_hour = 0
+      for day in calendar.startdt..calendar.enddt do
+        # filter
+        next unless time_entries[day]
+        # logic
+        for time_entry in time_entries[day] do
+          # filter
+          next unless time_entry
+          # logic
+          entry_hours[day] = nvl_zero(entry_hours[day]) + time_entry.hours
+          week_entry_hour = week_entry_hour + time_entry.hours
+        end
+      end
+      week_entry_hours << week_entry_hour
+    end
+    {
+      'entry_hours' => entry_hours,
       'week_entry_hours' => week_entry_hours,
     }
   end
+  
   # css method ratio
   def style_ratio(issue)
     ratio = issue.done_ratio
@@ -90,22 +101,19 @@ module GrooveCalendarHelper
     color = "color:#666666;" if ratio >= 25 && ratio < 50
     color
   end
+
   # css method week
   def style_week(day)
-    if day.wday == 0
-      "background-color:#EE9999;color:#FFFFFF;"
-    elsif day.wday == 6
-      "background-color:#9999EE;color:#FFFFFF;"
-    else
-      "background-color:#F9F9F9;"
-    end
+    style = "background-color:#F9F9F9;"
+    style = "background-color:#EE9999;color:#FFFFFF;" if day.wday == 0
+    style = "background-color:#9999EE;color:#FFFFFF;" if day.wday == 6
+    style
   end
+
   # util method
   def nvl_zero(value)
-    if value
-      value
-    else
-      0
-    end
+    ret = 0
+    ret = value if value
+    ret
   end
 end
