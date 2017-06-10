@@ -55,8 +55,7 @@ module GrooveCalendarHelper
             # filter
             next unless time_entry
             # logic
-            entry_hours[day] = nvl_zero(entry_hours[day])
-            entry_hours[day] = entry_hours[day] + time_entry.hours
+            entry_hours[day] = nvl_zero(entry_hours[day]) + time_entry.hours
             week_entry_hour = week_entry_hour + time_entry.hours
           end
         end
@@ -64,13 +63,11 @@ module GrooveCalendarHelper
         events[day] = calendar.events_on(day)
         events[day].sort! do |a, b|
           ret = ((a.working_duration) <=> (b.working_duration)) * -1
-          if ret == 0
-            ret = ((a.project) <=> (b.project))
-          end
+          ret = ((a.project) <=> (b.project)) if ret == 0
           ret
         end
         # add
-        day = day + 1;
+        day += 1;
       end
       week_estimated_hours << week_estimated_hour
       week_entry_hours << week_entry_hour
@@ -86,17 +83,12 @@ module GrooveCalendarHelper
   # css method ratio
   def style_ratio(issue)
     ratio = issue.done_ratio
-    if ratio == 100
-      "color:#CCCCCC;"
-    elsif ratio >= 75
-      "color:#999999;"
-    elsif ratio >= 50
-      "color:#999999;"
-    elsif ratio >= 25
-      "color:#666666;"
-    else
-      "color:#333333;"
-    end
+    color = "color:#333333;"
+    color = "color:#CCCCCC;" if ratio == 100
+    color = "color:#999999;" if ratio >= 75 && ratio < 100
+    color = "color:#999999;" if ratio >= 50 && ratio < 75
+    color = "color:#666666;" if ratio >= 25 && ratio < 50
+    color
   end
   # css method week
   def style_week(day)
