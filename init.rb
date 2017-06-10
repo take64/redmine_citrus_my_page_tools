@@ -7,4 +7,9 @@ Redmine::Plugin.register :redmine_citrus_my_page_tools do
   version '0.0.0.5'
   url 'http://github.com/take64'
   author_url 'http://besidesplus.net/'
+  
+  Rails.configuration.to_prepare do
+    require_dependency 'my_controller'
+    MyController.send(:helper, GrooveCalendarHelper)
+  end
 end
