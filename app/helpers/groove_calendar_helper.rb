@@ -40,27 +40,24 @@ module GrooveCalendarHelper
       while day <= calendar.enddt
         # estimated_hours
         for issue in calendar.events_on(day) do
-          if issue.is_a? Issue
-            if issue.estimated_hours
-              unless estimated_hours[day]
-                estimated_hours[day] = 0
-              end
-              hour = (issue.estimated_hours / (issue.working_duration + 1))
-              estimated_hours[day] = estimated_hours[day] + hour
-              week_estimated_hour = week_estimated_hour + hour
-            end
-          end
+          # filter
+          next unless issue.is_a? Issue
+          next unless issue.estimated_hours
+          # logic
+          estimated_hours[day] = nvl_zero(estimated_hours[day])
+          hour = (issue.estimated_hours / (issue.working_duration + 1))
+          estimated_hours[day] = estimated_hours[day] + hour
+          week_estimated_hour = week_estimated_hour + hour
         end
         # entry_hours
         if time_entries[day]
           for time_entry in time_entries[day] do
-            if time_entry
-              unless entry_hours[day]
-                entry_hours[day] = 0
-              end
-              entry_hours[day] = entry_hours[day] + time_entry.hours
-              week_entry_hour = week_entry_hour + time_entry.hours
-            end
+            # filter
+            next unless time_entry
+            # logic
+            entry_hours[day] = nvl_zero(entry_hours[day])
+            entry_hours[day] = entry_hours[day] + time_entry.hours
+            week_entry_hour = week_entry_hour + time_entry.hours
           end
         end
         # events
@@ -78,14 +75,13 @@ module GrooveCalendarHelper
       week_estimated_hours << week_estimated_hour
       week_entry_hours << week_entry_hour
     end
-    
     {
       'estimated_hours' => estimated_hours,
       'entry_hours' => entry_hours,
       'events' => events,
       'week_estimated_hours' => week_estimated_hours,
       'week_entry_hours' => week_entry_hours,
-      }
+    }
   end
   # css method ratio
   def style_ratio(issue)
