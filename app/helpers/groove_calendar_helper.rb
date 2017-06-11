@@ -2,8 +2,11 @@ module GrooveCalendarHelper
   # calendar
   def groove_calendars
     week_list = [0, 7]
-    week_list.unshift(-7) if User.current.today.cwday <= 3
-    week_list.push(14)    if User.current.today.cwday >  3
+    if User.current.today.cwday <= 3
+      week_list.unshift(-7)
+    else
+      week_list.push(14)
+    end
     calendars = []
     for add_day in week_list do
       calendar = Redmine::Helpers::Calendar.new(User.current.today+add_day, current_language, :week)
@@ -28,22 +31,19 @@ module GrooveCalendarHelper
   # groove hours
   def groove_hours(calendars, events)
     estimated_hours = {}
-    week_estimated_hours = []
-    for calendar in calendars do
-      week_estimated_hour = 0
-      for day in calendar.startdt..calendar.enddt do
-        # estimated_hours
-        for issue in events[day] do
-          # filter
-          next unless issue.is_a? Issue
-          next unless issue.estimated_hours
-          # logic
-          hour = (issue.estimated_hours / (issue.working_duration + 1))
-          estimated_hours[day] = nvl_zero(estimated_hours[day]) + hour
-          week_estimated_hour = week_estimated_hour + hour
-        end
+    week_estimated_hours = Array.new(calendars.length, 0)
+    for day in calendars.first.startdt..calendars.last.enddt do
+      for issue in events[day] do
+        # filter
+        next unless issue.is_a? Issue
+        next unless issue.estimated_hours
+        # logic
+        hour = (issue.estimated_hours / (issue.working_duration + 1))
+        estimated_hours[day] = nvl_zero(estimated_hours[day]) + hour
+        calendar = find_calendar(calendars, day)
+        calendar_index = calendars.index(calendar)
+        week_estimated_hours[calendar_index] += hour
       end
-      week_estimated_hours << week_estimated_hour
     end
     {
       'estimated_hours' => estimated_hours,
@@ -54,15 +54,12 @@ module GrooveCalendarHelper
   # events
   def groove_events(calendars)
     events = {}
-    for calendar in calendars do
-      for day in calendar.startdt..calendar.enddt do
-        # events
-        events[day] = calendar.events_on(day)
-        events[day].sort! do |a, b|
-          ret = ((a.working_duration) <=> (b.working_duration)) * -1
-          ret = ((a.project) <=> (b.project)) if ret == 0
-          ret
-        end
+    for day in calendars.first.startdt..calendars.last.enddt do
+      events[day] = find_calendar(calendars, day).events_on(day)
+      events[day].sort! do |a, b|
+        ret = ((a.working_duration) <=> (b.working_duration)) * -1
+        ret = ((a.project) <=> (b.project)) if ret == 0
+        ret
       end
     end
     events
@@ -71,27 +68,31 @@ module GrooveCalendarHelper
   # entry hours
   def groove_entry_hours(calendars, time_entries)
     entry_hours = {}
-    week_entry_hours = []
-    for calendar in calendars do
-      week_entry_hour = 0
-      for day in calendar.startdt..calendar.enddt do
+    week_entry_hours = Array.new(calendars.length, 0)
+    for day in calendars.first.startdt..calendars.last.enddt do
+      # filter
+      next unless time_entries[day]
+      # logic
+      for time_entry in time_entries[day] do
         # filter
-        next unless time_entries[day]
+        next unless time_entry
         # logic
-        for time_entry in time_entries[day] do
-          # filter
-          next unless time_entry
-          # logic
-          entry_hours[day] = nvl_zero(entry_hours[day]) + time_entry.hours
-          week_entry_hour = week_entry_hour + time_entry.hours
-        end
+        entry_hours[day] = nvl_zero(entry_hours[day]) + time_entry.hours
+        calendar = find_calendar(calendars, day)
+        calendar_index = calendars.index(calendar)
+        week_entry_hours[calendar_index] += time_entry.hours
       end
-      week_entry_hours << week_entry_hour
     end
     {
       'entry_hours' => entry_hours,
       'week_entry_hours' => week_entry_hours,
     }
+  end
+  
+  # find calendar
+  def find_calendar(calendars, day)
+    calendar = calendars.find { |item| (item.startdt <= day && item.enddt >= day) }
+    calendar
   end
   
   # css method ratio
