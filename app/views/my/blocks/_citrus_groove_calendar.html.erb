@@ -3,13 +3,16 @@
   calendars = groove_calendars
   # time_entry
   time_entries = groove_time_entries(calendars[0].startdt)
-  # hours
-  hours = groove_hours(calendars, time_entries)
-  estimated_hours = hours['estimated_hours']
-  entry_hours = hours['entry_hours']
-  events = hours['events']
-  week_estimated_hours = hours['week_estimated_hours']
-  week_entry_hours = hours['week_entry_hours']
+  # events
+  events = groove_events(calendars)
+  # estimated hours
+  estimated_hour_list = groove_estimated_hours(calendars, events)
+  estimated_hours = estimated_hour_list['estimated_hours']
+  week_estimated_hours = estimated_hour_list['week_estimated_hours']
+  # entry hours
+  entry_hour_list = groove_entry_hours(calendars, time_entries)
+  entry_hours = entry_hour_list['entry_hours']
+  week_entry_hours = entry_hour_list['week_entry_hours']
   # css
   style_extends_issues = "padding:1em;"
   style_extends_week = "-webkit-writing-mode:vertical-rl;-ms-writing-mode:tb-rl;writing-mode:vertical-rl;"
