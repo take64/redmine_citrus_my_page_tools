@@ -28,8 +28,8 @@ module GrooveCalendarHelper
     time_entries
   end
 
-  # groove hours
-  def groove_hours(calendars, events)
+  # groove estimated hours
+  def groove_estimated_hours(calendars, events)
     estimated_hours = {}
     week_estimated_hours = Array.new(calendars.length, 0)
     for day in calendars.first.startdt..calendars.last.enddt do
