@@ -40,9 +40,7 @@ module GrooveCalendarHelper
         # logic
         hour = (issue.estimated_hours / (issue.working_duration + 1))
         estimated_hours[day] = nvl_zero(estimated_hours[day]) + hour
-        calendar = find_calendar(calendars, day)
-        calendar_index = calendars.index(calendar)
-        week_estimated_hours[calendar_index] += hour
+        week_estimated_hours[calendars.index(find_calendar(calendars, day))] += hour
       end
     end
     {
@@ -78,9 +76,7 @@ module GrooveCalendarHelper
         next unless time_entry
         # logic
         entry_hours[day] = nvl_zero(entry_hours[day]) + time_entry.hours
-        calendar = find_calendar(calendars, day)
-        calendar_index = calendars.index(calendar)
-        week_entry_hours[calendar_index] += time_entry.hours
+        week_entry_hours[calendars.index(find_calendar(calendars, day))] += time_entry.hours
       end
     end
     {
