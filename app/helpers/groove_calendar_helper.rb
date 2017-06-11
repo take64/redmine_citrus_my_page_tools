@@ -2,11 +2,8 @@ module GrooveCalendarHelper
   # calendar
   def groove_calendars
     week_list = [0, 7]
-    if User.current.today.cwday <= 3
-      week_list.unshift(-7)
-    else
-      week_list.push(14)
-    end
+    week_list.unshift(-7) if User.current.today.cwday <= 3
+    week_list.push(14)    if User.current.today.cwday >  3
     calendars = []
     for add_day in week_list do
       calendar = Redmine::Helpers::Calendar.new(User.current.today+add_day, current_language, :week)
@@ -29,21 +26,12 @@ module GrooveCalendarHelper
   end
 
   # groove hours
-  def groove_hours(calendars)
+  def groove_hours(calendars, events)
     estimated_hours = {}
-    events = {}
     week_estimated_hours = []
     for calendar in calendars do
-      day = calendar.startdt
       week_estimated_hour = 0
-      while day <= calendar.enddt
-        # events
-        events[day] = calendar.events_on(day)
-        events[day].sort! do |a, b|
-          ret = ((a.working_duration) <=> (b.working_duration)) * -1
-          ret = ((a.project) <=> (b.project)) if ret == 0
-          ret
-        end
+      for day in calendar.startdt..calendar.enddt do
         # estimated_hours
         for issue in events[day] do
           # filter
@@ -54,15 +42,30 @@ module GrooveCalendarHelper
           estimated_hours[day] = nvl_zero(estimated_hours[day]) + hour
           week_estimated_hour = week_estimated_hour + hour
         end
-        day += 1;
       end
       week_estimated_hours << week_estimated_hour
     end
     {
       'estimated_hours' => estimated_hours,
-      'events' => events,
       'week_estimated_hours' => week_estimated_hours,
     }
+  end
+  
+  # events
+  def groove_events(calendars)
+    events = {}
+    for calendar in calendars do
+      for day in calendar.startdt..calendar.enddt do
+        # events
+        events[day] = calendar.events_on(day)
+        events[day].sort! do |a, b|
+          ret = ((a.working_duration) <=> (b.working_duration)) * -1
+          ret = ((a.project) <=> (b.project)) if ret == 0
+          ret
+        end
+      end
+    end
+    events
   end
 
   # entry hours
