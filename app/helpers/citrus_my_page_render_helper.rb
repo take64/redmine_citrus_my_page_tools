@@ -4,8 +4,7 @@ module CitrusMyPageRenderHelper
     ratio = issue.done_ratio
     color = "color:#333333;"
     color = "color:#CCCCCC;" if ratio == 100
-    color = "color:#999999;" if ratio >= 75 && ratio < 100
-    color = "color:#999999;" if ratio >= 50 && ratio < 75
+    color = "color:#999999;" if ratio >= 50 && ratio < 100
     color = "color:#666666;" if ratio >= 25 && ratio < 50
     color
   end

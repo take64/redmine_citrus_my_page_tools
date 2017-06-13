@@ -101,31 +101,8 @@ module GrooveCalendarHelper
         render_tasks_are_left(count_remaining)
       end
     end
-#    render_tasks_none                       if (count_remaining == 0 && count_completed == 0)
-#    render_tasks_all_completed(cwday)       if (count_remaining == 0 && count_completed != 0)
-#    render_tasks_not_active(cwday)          if (count_remaining > 0 && count_completed == 0)
-#    render_tasks_are_left(count_remaining)  if (count_remaining > 0 && count_completed != 0)
   end
   
-  # css method ratio
-  def style_ratio(issue)
-    ratio = issue.done_ratio
-    color = "color:#333333;"
-    color = "color:#CCCCCC;" if ratio == 100
-    color = "color:#999999;" if ratio >= 75 && ratio < 100
-    color = "color:#999999;" if ratio >= 50 && ratio < 75
-    color = "color:#666666;" if ratio >= 25 && ratio < 50
-    color
-  end
-
-  # css method week
-  def style_week(day)
-    style = "background-color:#F9F9F9;"
-    style = "background-color:#EE9999;color:#FFFFFF;" if day.wday == 0
-    style = "background-color:#9999EE;color:#FFFFFF;" if day.wday == 6
-    style
-  end
-
   # util method
   def nvl_zero(value)
     ret = 0
@@ -161,29 +138,5 @@ module GrooveCalendarHelper
       count += 1 if issue.closed?
     end
     count
-  end
-  
-  # render none tasks
-  def render_tasks_none
-    "task schedule none.".html_safe
-  end
-  
-  # render all completed tasks
-  def render_tasks_all_completed(cwday)
-    color = "#6666CC" if cwday <= 5
-    color = "#FFFFFF" if cwday >= 6
-    "<span style='font-weight:bold;color:#{color};'>task All Completed.</span>".html_safe
-  end
-  
-  # render not active tasks
-  def render_tasks_not_active(cwday)
-    color = "#CC6666" if cwday <= 5
-    color = "#FFFFFF" if cwday >= 6
-    "<span style='font-weight:bold;color:#{color};'>task Not Active...</span>".html_safe
-  end
-  
-  # render are left tasks
-  def render_tasks_are_left(count_remaining)
-    "<span style='font-weight:bold;'>task are left. ( #{count_remaining} )</span>".html_safe
   end
 end
