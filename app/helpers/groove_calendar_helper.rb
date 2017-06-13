@@ -2,11 +2,8 @@ module GrooveCalendarHelper
   # calendar
   def groove_calendars
     week_list = [0, 7]
-    if User.current.today.cwday <= 3
-      week_list.unshift(-7)
-    else
-      week_list.push(14)
-    end
+    week_list.unshift(-7) if User.current.today.cwday <= 3
+    week_list.push(14)    if User.current.today.cwday >= 4
     calendars = []
     for add_day in week_list do
       calendar = Redmine::Helpers::Calendar.new(User.current.today+add_day, current_language, :week)
@@ -91,15 +88,10 @@ module GrooveCalendarHelper
     count_completed = count_task_completed(issues)
     cwday = day.cwday
     # render tasks
-    if (count_remaining == 0 && count_completed == 0)
-      render_tasks_none
-    elsif (count_remaining == 0 && count_completed != 0)
-      render_tasks_all_completed(cwday)
-    elsif (count_remaining > 0 && count_completed == 0)
-      render_tasks_not_active(cwday)
-    elsif (count_remaining > 0)
-      render_tasks_are_left(count_remaining)
-    end
+    render_tasks_none                       if (count_remaining == 0 && count_completed == 0)
+    render_tasks_all_completed(cwday)       if (count_remaining == 0 && count_completed != 0)
+    render_tasks_not_active(cwday)          if (count_remaining > 0 && count_completed == 0)
+    render_tasks_are_left(count_remaining)  if (count_remaining > 0 && count_completed != 0)
   end
   
   # css method ratio
