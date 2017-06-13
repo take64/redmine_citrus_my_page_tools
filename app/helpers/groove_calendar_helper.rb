@@ -82,27 +82,6 @@ module GrooveCalendarHelper
     }
   end
   
-  # task rendering
-  def render_groove_task_progress(issues, day)
-    count_remaining = count_task_remaining(issues)
-    count_completed = count_task_completed(issues)
-    cwday = day.cwday
-    # render tasks
-    if count_remaining == 0
-      if count_completed == 0
-        render_tasks_none
-      else
-        render_tasks_all_completed(cwday)
-      end
-    elsif count_remaining > 0
-      if count_completed == 0
-        render_tasks_not_active(cwday)
-      else
-        render_tasks_are_left(count_remaining)
-      end
-    end
-  end
-  
   # util method
   def nvl_zero(value)
     ret = 0
