@@ -22,14 +22,18 @@ module CitrusMyPageRenderHelper
     count_remaining = count_task_remaining(issues)
     count_completed = count_task_completed(issues)
     # render tasks
-    if (count_remaining == 0 && count_completed == 0)
-      render_tasks_none
-    elsif (count_remaining == 0 && count_completed != 0)
-      render_tasks_all_completed(day.cwday)
-    elsif (count_remaining > 0  && count_completed == 0)
-      render_tasks_not_active(day.cwday)
-    elsif (count_remaining > 0  && count_completed != 0)
-      render_tasks_are_left(count_remaining)
+    if count_remaining == 0
+      if count_completed == 0
+        render_tasks_none
+      else
+        render_tasks_all_completed(day.cwday)
+      end
+    elsif count_remaining > 0
+      if count_completed == 0
+        render_tasks_not_active(day.cwday)
+      else
+        render_tasks_are_left(count_remaining)
+      end
     end
   end
   
