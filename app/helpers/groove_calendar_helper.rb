@@ -88,10 +88,23 @@ module GrooveCalendarHelper
     count_completed = count_task_completed(issues)
     cwday = day.cwday
     # render tasks
-    render_tasks_none                       if (count_remaining == 0 && count_completed == 0)
-    render_tasks_all_completed(cwday)       if (count_remaining == 0 && count_completed != 0)
-    render_tasks_not_active(cwday)          if (count_remaining > 0 && count_completed == 0)
-    render_tasks_are_left(count_remaining)  if (count_remaining > 0 && count_completed != 0)
+    if count_remaining == 0
+      if count_completed == 0
+        render_tasks_none
+      else
+        render_tasks_all_completed(cwday)
+      end
+    elsif count_remaining > 0
+      if count_completed == 0
+        render_tasks_not_active(cwday)
+      else
+        render_tasks_are_left(count_remaining)
+      end
+    end
+#    render_tasks_none                       if (count_remaining == 0 && count_completed == 0)
+#    render_tasks_all_completed(cwday)       if (count_remaining == 0 && count_completed != 0)
+#    render_tasks_not_active(cwday)          if (count_remaining > 0 && count_completed == 0)
+#    render_tasks_are_left(count_remaining)  if (count_remaining > 0 && count_completed != 0)
   end
   
   # css method ratio
