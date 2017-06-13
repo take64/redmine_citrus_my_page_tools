@@ -39,7 +39,8 @@
           <% end %>
           <td class="<%= 'today' if User.current.today == day %>" style="<%= style_week day %>">
             <p class="day-num"><%= day.day %></p>
-            <p class="day-num">( <%= nvl_zero entry_hours[day] %> / <%= nvl_zero estimated_hours[day] %> h )</p>
+            <p class="day-num">time entry ( <%= nvl_zero entry_hours[day] %> / <%= nvl_zero estimated_hours[day] %> h )</p>
+            <p class="day-num"><%= render_groove_task_progress(events[day], day) %></p>
             <% events[day].each do |i| %>
               <% if i.is_a? Issue %>
                 <div style="<%= style_extends_issues %> <%= style_ratio i %>" class="<%= i.css_classes %> <%= 'starting' if day == i.start_date %> <%= 'ending' if day == i.due_date %> tooltip">
