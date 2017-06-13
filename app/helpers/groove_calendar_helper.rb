@@ -2,11 +2,8 @@ module GrooveCalendarHelper
   # calendar
   def groove_calendars
     week_list = [0, 7]
-    if User.current.today.cwday <= 3
-      week_list.unshift(-7)
-    else
-      week_list.push(14)
-    end
+    week_list.unshift(-7) if User.current.today.cwday <= 3
+    week_list.push(14)    if User.current.today.cwday >= 4
     calendars = []
     for add_day in week_list do
       calendar = Redmine::Helpers::Calendar.new(User.current.today+add_day, current_language, :week)
@@ -85,35 +82,40 @@ module GrooveCalendarHelper
     }
   end
   
+  # util method
+  def nvl_zero(value)
+    ret = 0
+    ret = value if value
+    ret
+  end
+  
   # find calendar
   def find_calendar(calendars, day)
     calendar = calendars.find { |item| (item.startdt <= day && item.enddt >= day) }
     calendar
   end
   
-  # css method ratio
-  def style_ratio(issue)
-    ratio = issue.done_ratio
-    color = "color:#333333;"
-    color = "color:#CCCCCC;" if ratio == 100
-    color = "color:#999999;" if ratio >= 75 && ratio < 100
-    color = "color:#999999;" if ratio >= 50 && ratio < 75
-    color = "color:#666666;" if ratio >= 25 && ratio < 50
-    color
+  # count remaining task
+  def count_task_remaining(issues)
+    count = 0
+    issues.each do |issue|
+      # filter
+      next unless issue.is_a?(Issue)
+      # logic
+      count += 1 unless issue.closed?
+    end
+    count
   end
-
-  # css method week
-  def style_week(day)
-    style = "background-color:#F9F9F9;"
-    style = "background-color:#EE9999;color:#FFFFFF;" if day.wday == 0
-    style = "background-color:#9999EE;color:#FFFFFF;" if day.wday == 6
-    style
-  end
-
-  # util method
-  def nvl_zero(value)
-    ret = 0
-    ret = value if value
-    ret
+  
+  # count completed task
+  def count_task_completed(issues)
+    count = 0
+    issues.each do |issue|
+      # filter
+      next unless issue.is_a?(Issue)
+      # logic
+      count += 1 if issue.closed?
+    end
+    count
   end
 end
