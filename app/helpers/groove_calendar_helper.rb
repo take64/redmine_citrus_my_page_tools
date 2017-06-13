@@ -133,8 +133,6 @@ module GrooveCalendarHelper
     ret
   end
   
-  private
-  
   # find calendar
   def find_calendar(calendars, day)
     calendar = calendars.find { |item| (item.startdt <= day && item.enddt >= day) }
