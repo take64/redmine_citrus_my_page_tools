@@ -11,6 +11,7 @@ Redmine::Plugin.register :redmine_citrus_my_page_tools do
   Rails.configuration.to_prepare do
     require_dependency 'my_controller'
     MyController.send(:helper, GrooveCalendarHelper)
+    MyController.send(:helper, GrooveIssuesHelper)
     MyController.send(:helper, CitrusMyPageRenderHelper)
   end
 end

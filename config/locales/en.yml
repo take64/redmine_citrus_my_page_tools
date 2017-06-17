@@ -1,3 +1,7 @@
 # Japanese strings go here for Rails i18n
 en:
   citrus_groove_calendar: "Citrus Groove Calendar"
+  citrus_groove_issues: "Citrus Groove Issues"
+  label_issue_due_over: "Issue Due Over"
+  label_issue_due_today: "Issue Due Today"
+  label_issue_due_near7: "Issue Due Near Future 7days"
