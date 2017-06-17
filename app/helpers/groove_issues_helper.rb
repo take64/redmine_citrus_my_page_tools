@@ -42,38 +42,28 @@ module GrooveIssuesHelper
   
   #get issues due over
   def groove_issues_due_over
-    issues = Issue.visible.open.
-      where("issues.assigned_to_id = ? AND issues.due_date < ? AND (issues.parent_id <> issues.id OR issues.parent_id is null)", User.current.id, User.current.today).
-      order("#{Project.table_name}.name ASC, issues.done_ratio DESC").
-      to_a.
-      group_by { |issue| {:project => issue.project, :version => issue.fixed_version} }
-    issues
+    groove_issues_due("issues.assigned_to_id = ? AND issues.due_date < ? AND (issues.parent_id <> issues.id OR issues.parent_id is null)", User.current.id, User.current.today)
   end
   
   #get issues due today
   def groove_issues_due_today
-    issues = Issue.visible.open.
-      where("issues.assigned_to_id = ? AND issues.due_date = ? AND (issues.parent_id <> issues.id OR issues.parent_id is null)", User.current.id, User.current.today).
-      order("#{Project.table_name}.name ASC, issues.done_ratio DESC").
-      to_a.
-      group_by { |issue| {:project => issue.project, :version => issue.fixed_version} }
-    issues
+    groove_issues_due("issues.assigned_to_id = ? AND issues.due_date = ? AND (issues.parent_id <> issues.id OR issues.parent_id is null)", User.current.id, User.current.today)
   end
   
   #get issues due future
   def groove_issues_due_future
-    issues = Issue.visible.open.
-      where("issues.assigned_to_id = ? AND issues.due_date > ? AND (issues.parent_id <> issues.id OR issues.parent_id is null)", User.current.id, User.current.today).
-      order("#{Project.table_name}.name ASC, issues.done_ratio DESC").
-      to_a.
-      group_by { |issue| {:project => issue.project, :version => issue.fixed_version} }
-    issues
+    groove_issues_due("issues.assigned_to_id = ? AND issues.due_date > ? AND (issues.parent_id <> issues.id OR issues.parent_id is null)", User.current.id, User.current.today)
   end
   
   #get issues due future
   def groove_issues_due_near7
+    groove_issues_due("issues.assigned_to_id = ? AND (issues.due_date > ? AND issues.due_date <= ?) AND (issues.parent_id <> issues.id OR issues.parent_id is null)", User.current.id, User.current.today, User.current.today+7)
+  end
+  
+  # get issue due
+  def groove_issues_due(where, *condition)
     issues = Issue.visible.open.
-      where("issues.assigned_to_id = ? AND (issues.due_date > ? AND issues.due_date <= ?) AND (issues.parent_id <> issues.id OR issues.parent_id is null)", User.current.id, User.current.today, User.current.today+7).
+      where(where, *condition).
       order("#{Project.table_name}.name ASC, issues.done_ratio DESC").
       to_a.
       group_by { |issue| {:project => issue.project, :version => issue.fixed_version} }
