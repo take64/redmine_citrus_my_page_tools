@@ -1,0 +1,75 @@
+<% if grouped_issues && grouped_issues.any? %>
+<%= form_tag({}) do %>
+  <table class="list issues">
+    <thead><tr>
+    <th style="width:4%;">&nbsp;</th>
+    <th style="width:4%;"><%= "#" %></th>
+    <th style="width:8%;"><%= l(:field_tracker) %></th>
+    <th style="width:8%;"><%= l(:field_status) %></th>
+    <th style="width:8%;"><%= l(:field_done_ratio) %></th>
+    <th style="width:36%;"><%= l(:field_subject) %></th>
+    <th style="width:8%;"><%= l(:field_estimated_hours) %></th>
+    <th style="width:8%;">
+      <% if type_due && type_due == GrooveIssuesHelper::TYPE_DUE_OVER %>
+        <%= l(:field_delay) %>
+      <% else %>
+        &nbsp;
+      <% end %>
+    </th>
+    <th style="width:16%;">&nbsp;</th>
+    </tr></thead>
+    <tbody>
+    <% grouped_issues.each do |key, issues| %>
+      <% next if issues.empty? %>
+      <tr class="cell-head <%= cycle('odd', 'even') %>">
+        <td class="project" colspan="4" style="font-weight:bold;">
+          <% if key[:version] %>
+          <%= link_to_version(key[:version]) %>
+          <% else %>
+          <%= link_to_project(key[:project]) %>
+          <% end %>
+        </td>
+        <td class="done_ratio" style="font-weight:bold;"><%= "#{groove_average_ratio_issues(issues)} %" %></td>
+        <td>&nbsp;</td>
+        <td class="hours" style="font-weight:bold;"><%= "#{groove_total_estimated_hour_issues(issues)}" %></td>
+        <td colspan="2">&nbsp;</td>
+      </tr>
+      <% issues.each do |issue| %>
+      <tr id="issue-<%= h(issue.id) %>" class="hascontextmenu <%= cycle('odd', 'even') %> <%= issue.css_classes %>">
+        <td>&nbsp;</td>
+        <td class="id">
+          <%= check_box_tag("ids[]", issue.id, false, :style => 'display:none;', :id => nil) %>
+          <%= link_to(issue.id, issue_path(issue)) %>
+        </td>
+        <td class="tracker"><%= issue.tracker %></td>
+        <td class="status"><%= issue.status %></td>
+        <td class="done_ratio"><%= "#{issue.done_ratio} %" %></td>
+        <td class="subject"><%= link_to(issue.subject.truncate(60), issue_path(issue)) %></td>
+        <td class="hours"><%= html_hours("%.2f" % issue.estimated_hours) if issue.estimated_hours %></td>
+        <td class="hours">
+          <% if type_due && type_due == GrooveIssuesHelper::TYPE_DUE_OVER %>
+            <%= "#{(issue.due_date - User.current.today).to_i} 日" %>
+          <% else %>
+            &nbsp;
+          <% end %>
+        </td>
+        <td class="buttons">
+        <% if issue.editable? %>
+          <%= link_to l(:button_edit), {:controller => 'issues', :action => 'edit', :id => issue},
+                      :title => l(:button_edit),
+                      :class => 'icon-only icon-edit' %>
+          <%= link_to l(:button_delete), {:controller => 'issues', :action => 'destroy', :id => issue},
+                      :data => {:confirm => l(:text_are_you_sure)}, :method => :delete,
+                      :title => l(:button_delete),
+                      :class => 'icon-only icon-del' %>
+        <% end %>
+        </td>
+      </tr>
+      <% end %>
+    <% end %>
+    </tbody>
+  </table>
+<% end %>
+<% else %>
+  <p class="nodata"><%= l(:label_no_data) %></p>
+<% end %>
