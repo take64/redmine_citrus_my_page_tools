@@ -51,7 +51,28 @@ I am checking the operation.
     (予定工数と実績工数の表示)
 
 * Preview
-![preview-2017-06-01_1](doc/preview-2017-06-01_1.png)
+![preview-2017-06-17_1](doc/preview-2017-06-17_1.png)
+
+### Citrus Groove Issues
+
+* Purpose
+
+    * will find a ticket that has expired.  
+    (有効期限が切れたチケットが見つかります。)
+
+* Contents
+
+    * over due ticket list.  
+    (期限切れのチケットリスト)
+
+    * today due ticket list.  
+    (今日のチケットリスト)
+
+    * future due ticket list.  
+    (将来の予定チケットリスト)
+
+* Preview
+![preview-2017-06-17_2](doc/preview-2017-06-17_2.png)
 
 ## License
 
