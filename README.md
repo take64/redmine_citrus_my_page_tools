@@ -35,7 +35,7 @@ I am checking the operation.
 
 ## Usage
 
-### Citrus Groove Calendar
+### Citrus Groove Calendar (added on 2017-06-01)
 
 * Purpose
 
@@ -53,7 +53,7 @@ I am checking the operation.
 * Preview
 ![preview-2017-06-17_1](doc/preview-2017-06-17_1.png)
 
-### Citrus Groove Issues
+### Citrus Groove Issues (added on 2017-06-17)
 
 * Purpose
 
@@ -73,6 +73,21 @@ I am checking the operation.
 
 * Preview
 ![preview-2017-06-17_2](doc/preview-2017-06-17_2.png)
+
+### Citrus Groove Neglect Issues (added on 2017-06-19)
+
+* Purpose
+
+    * will find a ticket that was neglect.  
+    (未着手で放置されたチケットが見つかります。)
+
+* Contents
+
+    * over due && neglected ticket list.  
+    (未着手で放置されたチケットリスト)
+
+* Preview
+![preview-2017-06-17_2](doc/preview-2017-06-19_1.png)
 
 ## License
 
