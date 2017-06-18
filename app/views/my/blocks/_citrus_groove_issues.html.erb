@@ -34,15 +34,15 @@ table.list.issues tr.cell-head td a {
 
 <% if count_due_over > 0 %>
   <h4><%= l(:label_issue_due_over) %> (<%= count_due_over %>)</h4>
-  <%= render :partial => 'issues/cell_issue', :locals => {:grouped_issues => issues_due_over, :type_due => GrooveIssuesHelper::TYPE_DUE_OVER} unless issues_due_over.empty? %>
+  <%= render :partial => 'issues/cell_issue', :locals => {:grouped_issues => issues_due_over, :issue_type => GrooveIssuesHelper::TYPE_DUE_OVER} unless issues_due_over.empty? %>
 <% end %>
 
 <% if count_due_today > 0 %>
   <h4><%= l(:label_issue_due_today) %> (<%= count_due_today %>)</h4>
-  <%= render :partial => 'issues/cell_issue', :locals => {:grouped_issues => issues_due_today, :type_due => GrooveIssuesHelper::TYPE_DUE_TODAY} unless issues_due_today.empty? %>
+  <%= render :partial => 'issues/cell_issue', :locals => {:grouped_issues => issues_due_today, :issue_type => GrooveIssuesHelper::TYPE_DUE_TODAY} unless issues_due_today.empty? %>
 <% end %>
 
 <% if count_due_near7 > 0 %>
   <h4><%= l(:label_issue_due_near7) %> (<%= count_due_near7 %>)</h4>
-  <%= render :partial => 'issues/cell_issue', :locals => {:grouped_issues => issues_due_near7, :type_due => GrooveIssuesHelper::TYPE_DUE_NEAR7} unless issues_due_near7.empty? %>
+  <%= render :partial => 'issues/cell_issue', :locals => {:grouped_issues => issues_due_near7, :issue_type => GrooveIssuesHelper::TYPE_DUE_NEAR7} unless issues_due_near7.empty? %>
 <% end %>

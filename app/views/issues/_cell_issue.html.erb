@@ -1,4 +1,10 @@
-<% if grouped_issues && grouped_issues.any? %>
+<% 
+  if grouped_issues && grouped_issues.any?
+    is_view_delay = false
+    if issue_type && [GrooveIssuesHelper::TYPE_DUE_OVER, GrooveIssuesHelper::TYPE_NEGLECT_NOTYET].include?(issue_type)
+      is_view_delay = true
+    end
+%>
 <%= form_tag({}) do %>
   <table class="list issues">
     <thead><tr>
@@ -10,7 +16,7 @@
     <th style="width:36%;"><%= l(:field_subject) %></th>
     <th style="width:8%;"><%= l(:field_estimated_hours) %></th>
     <th style="width:8%;">
-      <% if type_due && type_due == GrooveIssuesHelper::TYPE_DUE_OVER %>
+      <% if is_view_delay %>
         <%= l(:field_delay) %>
       <% else %>
         &nbsp;
@@ -47,7 +53,7 @@
         <td class="subject"><%= link_to(issue.subject.truncate(60), issue_path(issue)) %></td>
         <td class="hours"><%= html_hours("%.2f" % issue.estimated_hours) if issue.estimated_hours %></td>
         <td class="hours">
-          <% if type_due && type_due == GrooveIssuesHelper::TYPE_DUE_OVER %>
+          <% if is_view_delay %>
             <%= "#{(issue.due_date - User.current.today).to_i} 日" %>
           <% else %>
             &nbsp;

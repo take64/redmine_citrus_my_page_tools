@@ -1,8 +1,9 @@
 module GrooveIssuesHelper
-  TYPE_DUE_OVER   = "due_over"
-  TYPE_DUE_TODAY  = "due_today"
-  TYPE_DUE_FUTURE = "due_future"
-  TYPE_DUE_NEAR7  = "due_near7"
+  TYPE_DUE_OVER       = "due_over"
+  TYPE_DUE_TODAY      = "due_today"
+  TYPE_DUE_FUTURE     = "due_future"
+  TYPE_DUE_NEAR7      = "due_near7"
+  TYPE_NEGLECT_NOTYET = "neglect_notyet"
   # get issues
   def groove_issues(type)
     case type
@@ -14,6 +15,8 @@ module GrooveIssuesHelper
       groove_issues_due_future
     when TYPE_DUE_NEAR7 then
       groove_issues_due_near7
+    when TYPE_NEGLECT_NOTYET then
+      groove_issues_neglect_notyet
     end
   end
   
@@ -58,6 +61,11 @@ module GrooveIssuesHelper
   #get issues due future
   def groove_issues_due_near7
     groove_issues_due("issues.assigned_to_id = ? AND (issues.due_date > ? AND issues.due_date <= ?) AND (issues.parent_id <> issues.id OR issues.parent_id is null)", User.current.id, User.current.today, User.current.today+7)
+  end
+  
+  #get issues neglect not yet
+  def groove_issues_neglect_notyet
+    groove_issues_due("issues.assigned_to_id = ? AND issues.due_date < ? AND (issues.parent_id <> issues.id OR issues.parent_id is null) AND done_ratio = 0", User.current.id, User.current.today)
   end
   
   # get issue due
