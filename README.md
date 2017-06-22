@@ -89,6 +89,21 @@ I am checking the operation.
 * Preview
 ![preview-2017-06-17_2](doc/preview-2017-06-19_1.png)
 
+### Citrus Groove Neglected and Soon Issues (added on 2017-06-23)
+
+* Purpose
+
+    * will find a ticket that was neglected and complete soon.  
+    (未着手で放置されたもうすぐ完了のチケットが見つかります。)
+
+* Contents
+
+    * over due && neglected and complete soon ticket list.  
+    (未着手で放置されたもうすぐ完了のチケットリスト)
+
+* Preview
+![preview-2017-06-23_1](doc/preview-2017-06-23_1.png)
+
 ## License
 
 * GNU General Public License, version 2 (GPLv2)
