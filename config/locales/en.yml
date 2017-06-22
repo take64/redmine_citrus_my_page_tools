@@ -5,4 +5,5 @@ en:
   label_issue_due_over: "Issue Due Over"
   label_issue_due_today: "Issue Due Today"
   label_issue_due_near7: "Issue Due Near Future 7days"
-  label_issue_neglect_notyet: "Neglect Issus"
+  label_issue_neglected_notyet: "Neglected Issues"
+  label_issue_neglected_soon: "Neglected and Soon Issues"
