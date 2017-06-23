@@ -1,0 +1,9 @@
+# Simplified Chinese strings go here for Rails i18n
+zh:
+  citrus_groove_calendar: "Citrus Groove Calendar"
+  citrus_groove_issues: "Citrus Groove Issues"
+  label_issue_due_over: "已逾期工作"
+  label_issue_due_today: "今天应完成的工作"
+  label_issue_due_near7: "未来7天内应完成的工作"
+  label_issue_neglected_notyet: "尚未处理过的工作"
+  label_issue_neglected_soon: "即将到期但尚未处理过的工作"
