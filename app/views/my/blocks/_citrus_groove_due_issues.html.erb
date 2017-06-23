@@ -1,0 +1,48 @@
+<%
+  # issues due over
+  issues_due_over = groove_issues(GrooveIssuesHelper::TYPE_DUE_OVER)
+  count_due_over = groove_count_issues(issues_due_over)
+  
+  # issues due today
+  issues_due_today = groove_issues(GrooveIssuesHelper::TYPE_DUE_TODAY)
+  count_due_today = groove_count_issues(issues_due_today)
+  
+  # issues due near7
+  issues_due_near7 = groove_issues(GrooveIssuesHelper::TYPE_DUE_NEAR7)
+  count_due_near7 = groove_count_issues(issues_due_near7)
+%>
+<style type="text/css">
+<!--
+table.list.issues td.id,
+table.list.issues td.tracker,
+table.list.issues td.status,
+table.list.issues td.done_ratio,
+table.list.issues td.hours {
+    text-align: center !important;
+}
+table.list.issues tr.cell-head {
+    background-color: #666666 !important;
+    color: #FFFFFF;
+}
+table.list.issues tr.cell-head td a {
+    color: #FFFFFF;
+}
+-->
+</style>
+
+<h3>Citrus Groove Issues</h3>
+
+<% if count_due_over > 0 %>
+  <h4><%= l(:label_issue_due_over) %> (<%= count_due_over %>)</h4>
+  <%= render :partial => 'issues/cell_issue', :locals => {:grouped_issues => issues_due_over, :issue_type => GrooveIssuesHelper::TYPE_DUE_OVER} unless issues_due_over.empty? %>
+<% end %>
+
+<% if count_due_today > 0 %>
+  <h4><%= l(:label_issue_due_today) %> (<%= count_due_today %>)</h4>
+  <%= render :partial => 'issues/cell_issue', :locals => {:grouped_issues => issues_due_today, :issue_type => GrooveIssuesHelper::TYPE_DUE_TODAY} unless issues_due_today.empty? %>
+<% end %>
+
+<% if count_due_near7 > 0 %>
+  <h4><%= l(:label_issue_due_near7) %> (<%= count_due_near7 %>)</h4>
+  <%= render :partial => 'issues/cell_issue', :locals => {:grouped_issues => issues_due_near7, :issue_type => GrooveIssuesHelper::TYPE_DUE_NEAR7} unless issues_due_near7.empty? %>
+<% end %>

@@ -1,3 +1,9 @@
-# English strings go here for Rails i18n
+# Japanese strings go here for Rails i18n
 ja:
   citrus_groove_calendar: "Citrus Groove Calendar"
+  citrus_groove_issues: "Citrus Groove Issues"
+  label_issue_due_over: "期限超過のチケット"
+  label_issue_due_today: "本日が期限のチケット"
+  label_issue_due_near7: "7日以内に期限が迫るチケット"
+  label_issue_neglected_notyet: "未着手放置チケット"
+  label_issue_neglected_soon: "もうすぐ完了放置チケット"

@@ -1,0 +1,30 @@
+<%
+  # issues soon neglected soon
+  issues_neglected_soon = groove_issues(GrooveIssuesHelper::TYPE_NEGLECTED_SOON)
+  count_neglected_soon = groove_count_issues(issues_neglected_soon)
+%>
+<style type="text/css">
+<!--
+table.list.issues td.id,
+table.list.issues td.tracker,
+table.list.issues td.status,
+table.list.issues td.done_ratio,
+table.list.issues td.hours {
+    text-align: center !important;
+}
+table.list.issues tr.cell-head {
+    background-color: #666666 !important;
+    color: #FFFFFF;
+}
+table.list.issues tr.cell-head td a {
+    color: #FFFFFF;
+}
+-->
+</style>
+
+<h3>Citrus Groove Neglected and Soon Issues</h3>
+
+<% if count_neglected_soon > 0 %>
+  <h4><%= l(:label_issue_neglected_soon) %> (<%= count_neglected_soon %>)</h4>
+  <%= render :partial => 'issues/cell_issue', :locals => {:grouped_issues => issues_neglected_soon, :issue_type => GrooveIssuesHelper::TYPE_NEGLECTED_SOON} unless issues_neglected_soon.empty? %>
+<% end %>
